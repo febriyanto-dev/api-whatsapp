@@ -1,0 +1,259 @@
+<html>
+    <head>
+        <title>WhatsApp API</title>
+
+        <!-- CSS only -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+        <style>
+            .bd-placeholder-img {
+                font-size: 1.125rem;
+                text-anchor: middle;
+                -webkit-user-select: none;
+                -moz-user-select: none;
+                user-select: none;
+            }
+    
+            @media (min-width: 768px) {
+                .bd-placeholder-img-lg {
+                    font-size: 3.5rem;
+                }
+            }
+        </style>
+
+    </head>
+    <body>
+
+        <header>
+            <div class="navbar navbar-dark bg-primary shadow-sm">
+                <div class="container">
+                    <a href="#" class="navbar-brand d-flex align-items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true" class="me-2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                    <strong>WhatsApp Multi Device</strong>
+                    </a>
+                </div>
+            </div>
+        </header>
+            
+        <main>
+
+            <section class="pt-2 text-center container">
+                <div class="row py-lg-5">
+                    <div class="col-lg-6 col-md-8 mx-auto">
+                        <p>
+                            <button type="button" class="btn btn-success my-2 btn-add-client">Add Client</button>
+                            <button type="button" class="btn btn-danger my-2 btn-close-client d-none">Close Form Client</button>
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="container form-client d-none">
+                <div class="row">
+                    <div class="col-lg-12 col-md-12 mx-auto">
+                        <form>
+                            <div class="form-group mb-3">
+                                <label for="client-number" class="mb-1">Phone Number</label>
+                                <input type="text" class="form-control" id="client-number" aria-describedby="Phone number" placeholder="Phone number">
+                            </div>
+                            <div class="form-group">
+                                <label for="client-description" class="mb-1">Description</label>
+                                <input type="text" class="form-control" id="client-description" aria-describedby="Description" placeholder="Description">
+                            </div>
+                            <button type="button" class="btn btn-primary my-3 btn-save-client">Submit</button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <div class="album py-5 bg-light">
+                <div class="container">
+                    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4 client-container">
+                        
+                        <div class="col box-client d-none">
+                            <div class="card shadow-sm">
+                                <img src="..." class="bd-placeholder-img card-img-top" width="100%" id="qrcode" alt="...">
+                                
+                                <div class="card-body text-center">
+                                    <h4 class="card-text show-phone">This is a wider card.</h4>
+                                    <p class="card-text show-description"><small>Description : This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</small></p>
+                                    <div class="alert alert-success div-success d-none" role="alert"></div>
+                                    <div class="alert alert-danger div-warning d-none" role="alert"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+        <footer class="text-muted py-5">
+            <div class="container">
+                <p class="float-end mb-1">
+                    <a href="#">Back to top</a>
+                </p>
+                <p class="mb-1">2021 &copy; Bootstrap Template</p>
+            </div>
+        </footer>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <!-- JavaScript Bundle with Popper -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.2/socket.io.min.js" integrity="sha512-N5JbZMETkl+0SZh5l8OA2VxSfF120owfQyy54iAXTJIKuqAn3A9TrNz1ypB55o8aSU5MxaodEgv74wGUvgUynQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+        <script type="text/javascript">
+            $(document).ready(function(){
+                
+                $('.btn-add-client').click(function() {
+                    $('.form-client').removeClass('d-none');
+                    $('.btn-close-client').removeClass('d-none');
+                    $('#client-number').focus();
+                });
+
+                $('.btn-close-client').click(function() {
+                    $('.form-client').addClass('d-none');
+                    $('.btn-close-client').addClass('d-none');
+
+                    clearForm();
+                });
+
+                var socket = io();
+
+                $('.btn-save-client').click(function() {
+
+                    if($("#client-number").val())
+                    {
+                        var clientNumber = phoneNumberFormatterSave($("#client-number").val());
+                        var clientDescription = $("#client-description").val();
+
+                        var Template = $('.box-client').first().clone().removeClass('d-none').addClass('box-'+clientNumber);
+
+                        Template.find(`#qrcode`).attr('src','https://png.pngtree.com/element_our/md/20180509/md_5af2d4c95ac7b.jpg');
+                        Template.find('.show-phone').html(clientNumber);
+                        Template.find('.show-description').html('<small>'+clientDescription+'</small>');
+                        Template.find(`.div-success`).removeClass('d-none');
+                        Template.find(`.div-success`).empty().html(`Connecting...`);
+
+                        $('.client-container').append(Template);
+
+                        clearForm();
+
+                        socket.emit('create-client', {
+                            clientNumber: clientNumber,
+                            clientDescription:clientDescription
+                        })
+                    }
+                    else{
+                        alert('Phone Number is required...');
+                        $('#client-number').focus();
+                    }
+
+                });
+             
+                socket.on('list_phone', function(data) {
+                    $('.client-container .client').not(':first').remove();
+
+                    jQuery.each(data, (index, item) => {
+
+                        let clientNumber = item.phone;
+                        let box_client = 'box-'+clientNumber;
+                        let clientDescription = item.description;
+
+                        $('.'+box_client).remove();
+
+                        let template = $('.box-client').first().clone().removeClass('d-none').addClass(box_client);
+
+                        template.find('.show-phone').html(clientNumber);
+                        template.find('.show-description').html('<small>'+clientDescription+'</small>');
+
+                        $('.client-container').append(template);
+
+                        if (item.status=='ACTIVE') {
+                            $(`.box-client.${box_client} #qrcode`).attr('src', 'https://cdn3.iconfinder.com/data/icons/cute-flat-social-media-icons-3/512/whatsapp.png');
+                            
+                            $(`.box-client.${box_client} .div-success`).removeClass('d-none');
+                            $(`.box-client.${box_client} .div-success`).empty().html(`<small>Whatsapp is ready!</small>`);
+                        }
+                        else{
+                            $(`.box-client.${box_client} #qrcode`).attr('src','https://png.pngtree.com/element_our/md/20180509/md_5af2d4c95ac7b.jpg');
+                            
+                            $(`.box-client.${box_client} .div-success`).removeClass('d-none');
+                            $(`.box-client.${box_client} .div-success`).empty().html(`<small>Connecting...</small>`);
+                        }
+                    });
+                });
+            
+                socket.on('qr', function(data) {
+                    let box_client = 'box-'+data.phone;
+                    $(`.box-client.${box_client} #qrcode`).attr('src', data.src);
+                    $(`.client.${box_client} #qrcode`).show();
+
+                    $(`.box-client.${box_client} .div-warning`).addClass('d-none');
+                    $(`.box-client.${box_client} .div-success`).removeClass('d-none');
+                    $(`.box-client.${box_client} .div-success`).empty().html(`<small>QR ${data.text}</small>`);
+                });
+
+                socket.on('message', function(data) {
+
+                    let box_client = 'box-'+data.phone;
+
+                    // $(`.box-client.${box_client} .div-success`).addClass('d-none');
+                    // $(`.box-client.${box_client} .div-warning`).addClass('d-none');
+
+                    if(data.text=='beda nomor'){
+                        $(`.box-client.${box_client} .div-warning`).removeClass('d-none');
+                        $(`.box-client.${box_client} .div-warning`).empty().html(`<small>Nomor WA yang terdaftar berbeda dengan nomor WA ${data.phoneScan} yang di scan..<br> Mohon untuk logout..<small>`);
+                    }
+
+                    console.log(data);
+
+                });
+
+                socket.on('ready', function(data) {
+                    let box_client = 'box-'+data.phone;
+
+                    if(data.picUrl){
+                        $(`.box-client.${box_client} #qrcode`).attr('src', data.picUrl);
+                    }
+                    else{
+                        $(`.box-client.${box_client} #qrcode`).attr('src', 'https://cdn3.iconfinder.com/data/icons/cute-flat-social-media-icons-3/512/whatsapp.png');
+                    }
+
+                    $(`.box-client.${box_client} .div-success`).removeClass('d-none');
+                    $(`.box-client.${box_client} .div-success`).empty().html(`<small>${data.text}</small>`);
+                    
+                });
+
+                socket.on('authenticated', function(data) {
+                    let box_client = 'box-'+data.phone;
+                    $(`.box-client.${box_client} #qrcode`).attr('src','https://png.pngtree.com/element_our/md/20180509/md_5af2d4c95ac7b.jpg');
+                    $(`.box-client.${box_client} .div-success`).removeClass('d-none');
+                    $(`.box-client.${box_client} .div-success`).empty().html(`<small>${data.text}</small>`);
+                });
+
+            });
+
+            function clearForm(){
+                $('#client-number').val('');
+                $('#client-description').val('');
+                $('#client-number').focus();
+            }
+
+            function phoneNumberFormatterSave(number){
+                // 1. menghilangkan karakter selain angka
+                let formatted = number.replace(/\D/g, '');
+
+                // 2. menghilangkan angka 0 didepan
+                // menggantikan dengan kode negara (62)
+                if(formatted.startsWith('0')){
+                    formatted = '62' + formatted.substr(1);
+                }
+
+                return formatted;
+            }
+        </script>
+        
+    </body>
+</html>
