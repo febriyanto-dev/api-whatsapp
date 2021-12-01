@@ -286,11 +286,14 @@ app.post('/v1/send-message',  [
     }
 
     client.sendMessage(number, message).then(response => {
+
+        console.log(number+' : WhatsApp message sent successfully from number '+sender);
+
         res.status(200).json({
             code: 200,
             status: 'success',
             message: {
-                send_message: 'Message sent'
+                send_message: 'WhatsApp message sent successfully from number '+sender
             },
             data: response
         });

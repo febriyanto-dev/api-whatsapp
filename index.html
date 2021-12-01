@@ -143,7 +143,7 @@
                         socket.emit('create-client', {
                             clientNumber: clientNumber,
                             clientDescription:clientDescription
-                        })
+                        });
                     }
                     else{
                         alert('Phone Number is required...');
@@ -170,11 +170,11 @@
 
                         $('.client-container').append(template);
 
-                        if (item.status=='ACTIVE') {
+                        if (item.ready==true) {
                             $(`.box-client.${box_client} #qrcode`).attr('src', 'https://cdn3.iconfinder.com/data/icons/cute-flat-social-media-icons-3/512/whatsapp.png');
                             
                             $(`.box-client.${box_client} .div-success`).removeClass('d-none');
-                            $(`.box-client.${box_client} .div-success`).empty().html(`<small>Whatsapp is ready!</small>`);
+                            $(`.box-client.${box_client} .div-success`).empty().html(`<small>Process authenticated!</small>`);
                         }
                         else{
                             $(`.box-client.${box_client} #qrcode`).attr('src','https://png.pngtree.com/element_our/md/20180509/md_5af2d4c95ac7b.jpg');
@@ -199,8 +199,8 @@
 
                     let box_client = 'box-'+data.phone;
 
-                    // $(`.box-client.${box_client} .div-success`).addClass('d-none');
-                    // $(`.box-client.${box_client} .div-warning`).addClass('d-none');
+                    $(`.box-client.${box_client} .div-success`).addClass('d-none');
+                    $(`.box-client.${box_client} .div-warning`).addClass('d-none');
 
                     if(data.text=='beda nomor'){
                         $(`.box-client.${box_client} .div-warning`).removeClass('d-none');
@@ -229,8 +229,25 @@
                 socket.on('authenticated', function(data) {
                     let box_client = 'box-'+data.phone;
                     $(`.box-client.${box_client} #qrcode`).attr('src','https://png.pngtree.com/element_our/md/20180509/md_5af2d4c95ac7b.jpg');
-                    $(`.box-client.${box_client} .div-success`).removeClass('d-none');
-                    $(`.box-client.${box_client} .div-success`).empty().html(`<small>${data.text}</small>`);
+                    $(`.box-client.${box_client} .div-success`).addClass('d-none');
+                    $(`.box-client.${box_client} .div-danger`).removeClass('d-none');
+                    $(`.box-client.${box_client} .div-warning`).empty().html(`<small>${data.text}</small>`);
+                });
+
+                socket.on('disconnected', function(data) {
+                    let box_client = 'box-'+data.phone;
+                    $(`.box-client.${box_client} #qrcode`).attr('src','https://png.pngtree.com/element_our/md/20180509/md_5af2d4c95ac7b.jpg');
+                    $(`.box-client.${box_client} .div-success`).addClass('d-none');
+                    $(`.box-client.${box_client} .div-danger`).removeClass('d-none');
+                    $(`.box-client.${box_client} .div-warning`).empty().html(`<small>${data.text}</small>`);
+                });
+
+                socket.on('auth_failure', function(data) {
+                    let box_client = 'box-'+data.phone;
+                    $(`.box-client.${box_client} #qrcode`).attr('src','https://png.pngtree.com/element_our/md/20180509/md_5af2d4c95ac7b.jpg');
+                    $(`.box-client.${box_client} .div-success`).addClass('d-none');
+                    $(`.box-client.${box_client} .div-danger`).removeClass('d-none');
+                    $(`.box-client.${box_client} .div-warning`).empty().html(`<small>${data.text}</small>`);
                 });
 
             });

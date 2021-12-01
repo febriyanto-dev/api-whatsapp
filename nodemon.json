@@ -1,7 +1,6 @@
 {
     "ignore" : [
-        "whatsapp-session.json",
-        "whatsapp-sessions.json",
-        "whatsapp-session-*.json"
+        "session/sessions.json",
+        "session/session-*.json"
     ]
 }
