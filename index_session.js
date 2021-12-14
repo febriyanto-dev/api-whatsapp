@@ -311,27 +311,27 @@ app.post('/v1/send-message',  [
 
     const client = sessions.find(sess => sess.phone == sender).client;
 
-    const isRegisteredNumber = await client.isRegisteredUser(number);
-    const isConnection = await client.getState();
+    // const isRegisteredNumber = await client.isRegisteredUser(number);
+    // const isConnection = await client.getState();
 
-    if(isConnection!='CONNECTED')
-    {
-        return res.status(422).json({
-            status: 'fail',
-            message: {
-                send_message: `The number ${sender} is not connected`
-            }
-        });
-    }
+    // if(isConnection!='CONNECTED')
+    // {
+    //     return res.status(422).json({
+    //         status: 'fail',
+    //         message: {
+    //             send_message: `The number ${sender} is not connected`
+    //         }
+    //     });
+    // }
    
-    if(!isRegisteredNumber){
-        return res.status(422).json({
-            status: 'fail',
-            message: {
-                send_message: 'The number is not registered'
-            }
-        });
-    }
+    // if(!isRegisteredNumber){
+    //     return res.status(422).json({
+    //         status: 'fail',
+    //         message: {
+    //             send_message: 'The number is not registered'
+    //         }
+    //     });
+    // }
 
     client.sendMessage(number, message).then(response => {
         
